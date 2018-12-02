@@ -63,3 +63,20 @@ func TestPart2(t *testing.T) {
 		assert.Equal(t, "fgij", match)
 	})
 }
+
+func TestPart2Altnerative(t *testing.T) {
+	part2Test := []string{
+		"abcde",
+		"fghij",
+		"klmno",
+		"pqrst",
+		"fguij",
+		"axcye",
+		"wvxyz",
+	}
+
+	t.Run("Part 2 - Alternative", func(t *testing.T) {
+		match := part2Alternative(&part2Test)
+		assert.Equal(t, "fgij", match)
+	})
+}

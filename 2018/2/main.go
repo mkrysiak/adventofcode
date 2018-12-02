@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strings"
 )
 
 func main() {
@@ -11,6 +12,7 @@ func main() {
 	checksum := part1(contents)
 	fmt.Printf("Part 1: %d\n", checksum)
 	fmt.Printf("Part 2: %s\n", part2(contents))
+	fmt.Printf("Part 2a: %s\n", part2Alternative(contents))
 }
 
 func part1(contents *[]string) int {
@@ -45,6 +47,23 @@ func hasTwosOrThrees(s string) (bool, bool) {
 		}
 	}
 	return twos, threes
+}
+
+func part2Alternative(contents *[]string) string {
+
+	seen := map[string]struct{}{}
+
+	for _, s := range *contents {
+		r := []rune(s)
+		for i := range r {
+			pair := string(r[:i]) + "-" + string(r[(i+1):])
+			if _, ok := seen[pair]; ok {
+				return strings.Replace(pair, "-", "", 1)
+			}
+			seen[pair] = struct{}{}
+		}
+	}
+	return ""
 }
 
 func part2(contents *[]string) string {
