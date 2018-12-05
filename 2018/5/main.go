@@ -4,11 +4,13 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"sort"
 )
 
 func main() {
 	contents := readInputFile("input")
 	fmt.Printf("Part 1: %d\n", part1(contents[0]))
+	fmt.Printf("Part 2: %d\n", part2(contents[0]))
 }
 
 func part1(contents string) int {
@@ -31,6 +33,24 @@ func part1(contents string) int {
 
 	}
 	return len(runes)
+}
+
+func part2(contents string) int {
+	lens := []int{}
+	runes := []rune(contents)
+	j := 'a'
+	for i := 'A'; i < 'Z'; i++ {
+		new := []rune{}
+		for _, r := range runes {
+			if r != i && r != j {
+				new = append(new, r)
+			}
+		}
+		lens = append(lens, part1(string(new)))
+		j++
+	}
+	sort.Ints(lens)
+	return lens[0]
 }
 
 func readInputFile(infile string) []string {
