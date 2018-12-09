@@ -11,6 +11,7 @@ func main() {
 	playerCount, _ := strconv.Atoi(os.Args[1])
 	lastMarble, _ := strconv.Atoi(os.Args[2])
 	fmt.Printf("Part 1: %d\n", part1(playerCount, lastMarble))
+	fmt.Printf("Part 2: %d\n", part1(playerCount, 100*lastMarble))
 }
 
 func part1(playerCount int, lastMarble int) int {
