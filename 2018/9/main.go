@@ -28,19 +28,20 @@ func part1(playerCount int, lastMarble int) int {
 		// fmt.Println()
 
 		if (turn % 23) == 0 {
+			r = r.Move(-8)
 			players[currPlayer] += turn
-			players[currPlayer] += r.Move(-8).Value.(int)
+			players[currPlayer] += r.Value.(int)
 
 			// ring.Unlink() removes r.Next(), not r.  So move back one more.
-			r = r.Move(-9)
+			r = r.Prev()
 			r.Unlink(1)
-			r = r.Next().Next()
+			r = r.Move(2)
 		} else {
 			newMarble := ring.New(1)
 			newMarble.Value = turn
 
 			r.Link(newMarble)
-			r = r.Next().Next()
+			r = r.Move(2)
 		}
 		currPlayer++
 		if currPlayer > (playerCount - 1) {
