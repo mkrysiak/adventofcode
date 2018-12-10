@@ -117,6 +117,10 @@ func part1(contents *[]string) (Pairs, int) {
 			u[pairs[i].positionY] = struct{}{}
 		}
 		cycles++
+		// Heuristic that detects and increase in the number of vertically
+		// aligned coordinates.  An better alternative may be to find
+		// the area of the box that contains all coordinates, and detect
+		// the min area.
 		if float64(uniqYLen)*.12 > float64(len(u)) {
 			return pairs, cycles
 		}
