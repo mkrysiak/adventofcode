@@ -11,7 +11,8 @@ import (
 
 func main() {
 	contents := readInputFile("input")
-	fmt.Printf("%d\n", part1(contents))
+	fmt.Printf("Part 1: %d\n", part1(contents))
+	fmt.Printf("Part 2: %d\n", part2(contents))
 }
 
 func part1(contents *[]string) int {
@@ -25,6 +26,32 @@ func part1(contents *[]string) int {
 		}
 		sort.Ints(intFields)
 		sum += (intFields[len(intFields)-1] - intFields[0])
+	}
+	return sum
+}
+
+func part2(contents *[]string) int {
+	var sum int
+	for _, v := range *contents {
+		strFields := strings.Fields(v)
+		var intFields []int
+		for _, vv := range strFields {
+			f, _ := strconv.Atoi(vv)
+			intFields = append(intFields, f)
+		}
+		sort.Ints(intFields)
+
+		for _, w := range intFields {
+			for _, ww := range intFields {
+				if w == ww {
+					continue
+				}
+				if (w % ww) == 0 {
+					sum += w / ww
+					break
+				}
+			}
+		}
 	}
 	return sum
 }
