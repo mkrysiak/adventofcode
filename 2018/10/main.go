@@ -33,7 +33,15 @@ func (p Pairs) Len() int {
 }
 
 func (p Pairs) Less(i, j int) bool {
-	return p[i].positionX < p[j].positionX
+	if p[i].positionX < p[j].positionX {
+		return true
+	}
+	if p[i].positionX == p[j].positionX {
+		if p[i].positionY < p[j].positionY {
+			return true
+		}
+	}
+	return false
 }
 
 func (p Pairs) Swap(i, j int) {
@@ -100,6 +108,7 @@ func part1(contents *[]string) (Pairs, int) {
 
 	uniqYLen := len(uniqY)
 	cycles := 0
+	sort.Sort(pairs)
 	for {
 		u := map[int]struct{}{}
 		for i := range pairs {
@@ -108,12 +117,14 @@ func part1(contents *[]string) (Pairs, int) {
 			u[pairs[i].positionY] = struct{}{}
 		}
 		cycles++
-		// A better solution would be find the minimum area
-		// between (minX, minY) and (maxX, maxY)
 		if float64(uniqYLen)*.12 > float64(len(u)) {
 			return pairs, cycles
 		}
 	}
+}
+
+func area(pairs Pairs) int {
+	return (pairs[len(pairs)-1].positionX - pairs[0].positionX) * (pairs[len(pairs)-1].positionY - pairs[0].positionY)
 }
 
 func readInputFile(infile string) *[]string {
