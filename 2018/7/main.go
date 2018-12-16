@@ -109,7 +109,7 @@ func nextIteration(graph map[string][]string, nextList map[string]struct{}, degr
 		return
 	}
 
-	availWorkers := []int{}
+	availWorkers := [4]int{}
 	for i, w := range row.workers {
 		if w.timeRemaining <= 0 {
 			availWorkers = append(availWorkers, i)

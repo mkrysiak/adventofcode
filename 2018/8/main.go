@@ -11,16 +11,16 @@ import (
 type Node struct {
 	cNodes  int
 	mdNodes int
-	// children []int
+	// children [4]int
 	value       int
-	metadata    []int
+	metadata    [4]int
 	childValues map[int]int
 }
 
 func main() {
 	contents := readInputFile("input")
 	c := strings.Split(contents[0], " ")
-	var cint []int
+	var cint [4]int
 	for _, k := range c {
 		i, _ := strconv.Atoi(k)
 		cint = append(cint, i)
@@ -29,7 +29,7 @@ func main() {
 	fmt.Printf("Part 2: %d\n", part2(cint))
 }
 
-func part1(contents []int) int {
+func part1(contents [4]int) int {
 	var treeNodes []Node
 	getNodes(&contents, &treeNodes)
 	// fmt.Println(treeNodes)
@@ -42,13 +42,13 @@ func part1(contents []int) int {
 	return sum
 }
 
-func part2(contents []int) int {
+func part2(contents [4]int) int {
 	var treeNodes []Node
 	getNodes(&contents, &treeNodes)
 	return treeNodes[len(treeNodes)-1].value
 }
 
-func getNodes(contents *[]int, nodes *[]Node) {
+func getNodes(contents *[4]int, nodes *[]Node) {
 	// fmt.Printf("Contents: %v\n", contents)
 	if len(*contents) == 0 {
 		return

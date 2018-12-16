@@ -12,7 +12,7 @@ func main() {
 	fmt.Printf("Part 2: %d\n", part2(contents))
 }
 
-func part1(contents []int) int {
+func part1(contents [4]int) int {
 	var sum, last int
 	for i, v := range contents {
 		if i == 0 {
@@ -26,7 +26,7 @@ func part1(contents []int) int {
 	return sum
 }
 
-func part2(contents []int) int {
+func part2(contents [4]int) int {
 	var sum, last int
 	step := len(contents) / 2
 	for i, v := range contents {
@@ -48,13 +48,13 @@ func toInt(buf []byte) (n int) {
 	return
 }
 
-func readInputFile(infile string) []int {
+func readInputFile(infile string) [4]int {
 
 	file, err := os.Open(infile)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to open file: %s\n", err)
 	}
-	var contents []int
+	var contents [4]int
 	scanner := bufio.NewScanner(file)
 	scanner.Split(bufio.ScanBytes)
 	for scanner.Scan() {

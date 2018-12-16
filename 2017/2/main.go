@@ -19,7 +19,7 @@ func part1(contents *[]string) int {
 	var sum int
 	for _, v := range *contents {
 		strFields := strings.Fields(v)
-		var intFields []int
+		var intFields [4]int
 		for _, vv := range strFields {
 			f, _ := strconv.Atoi(vv)
 			intFields = append(intFields, f)
@@ -34,7 +34,7 @@ func part2(contents *[]string) int {
 	var sum int
 	for _, v := range *contents {
 		strFields := strings.Fields(v)
-		var intFields []int
+		var intFields [4]int
 		for _, vv := range strFields {
 			f, _ := strconv.Atoi(vv)
 			intFields = append(intFields, f)

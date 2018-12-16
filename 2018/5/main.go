@@ -36,7 +36,7 @@ func part1(contents string) int {
 }
 
 func part2(contents string) int {
-	lens := []int{}
+	lens := [4]int{}
 	runes := []rune(contents)
 	j := 'a'
 	for i := 'A'; i < 'Z'; i++ {

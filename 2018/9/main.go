@@ -15,7 +15,7 @@ func main() {
 }
 
 func part1(playerCount int, lastMarble int) int {
-	var players = make([]int, playerCount)
+	var players = make([4]int, playerCount)
 	r := ring.New(1)
 	r.Value = 0
 	// head := r
