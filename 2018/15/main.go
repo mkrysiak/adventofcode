@@ -57,9 +57,8 @@ func part1(contents *[]string) int {
 			om := overlayedMap(m, aliveunits, nil)
 			we, err := weakestEnemy(src, aliveunits)
 			if err != nil {
-				r := reachablePositions(inRangePositions(om, aliveunits, src), connectedComponents(om, src.coord))
-				g := NewGraph(om, src.coord)
-				units[i].coord = g.nextMove(src.coord, r)
+				g := NewGraph(om, src.coord, inRangePositions(om, aliveunits, src))
+				units[i].coord = g.nextMove(src.coord)
 			}
 
 			// After moving (or if the unit began its turn in range of a target), the unit attacks.
@@ -121,9 +120,8 @@ func part2(contents *[]string, elfAttackPower int) int {
 				om := overlayedMap(m, aliveunits, nil)
 				we, err := weakestEnemy(src, aliveunits)
 				if err != nil {
-					r := reachablePositions(inRangePositions(om, aliveunits, src), connectedComponents(om, src.coord))
-					g := NewGraph(om, src.coord)
-					units[i].coord = g.nextMove(src.coord, r)
+					g := NewGraph(om, src.coord, inRangePositions(om, aliveunits, src))
+					units[i].coord = g.nextMove(src.coord)
 				}
 
 				// After moving (or if the unit began its turn in range of a target), the unit attacks.
@@ -273,25 +271,6 @@ func inRangePositions(m [][]rune, units Units, source Unit) Coordinates {
 	return openPositions
 }
 
-func reachablePositions(inRange Coordinates, cc Coordinates) Coordinates {
-	coordinates := Coordinates{}
-	// Union
-	ccMap := map[Coordinate]struct{}{}
-	inRangeMap := map[Coordinate]struct{}{}
-	for _, v := range cc {
-		ccMap[v] = struct{}{}
-	}
-	for _, v := range inRange {
-		inRangeMap[v] = struct{}{}
-	}
-	for k := range inRangeMap {
-		if _, ok := ccMap[k]; ok {
-			coordinates = append(coordinates, k)
-		}
-	}
-	return coordinates
-}
-
 func overlayedMap(m [][]rune, units Units, other Coordinates) [][]rune {
 	cMap := map[Coordinate]rune{}
 	mm := [][]rune{}
@@ -317,32 +296,6 @@ func overlayedMap(m [][]rune, units Units, other Coordinates) [][]rune {
 		}
 	}
 	return mm
-}
-
-func connectedComponents(m [][]rune, coord Coordinate) Coordinates {
-	ccMap := map[Coordinate]struct{}{
-		coord: struct{}{},
-	}
-	q := []Coordinate{coord}
-	for len(q) > 0 {
-		c := q[0]
-		q = q[1:]
-		for _, v := range neighbors {
-			if m[c.y+v.y][c.x+v.x] == '.' {
-				cc := Coordinate{x: c.x + v.x, y: c.y + v.y}
-				if _, ok := ccMap[cc]; !ok {
-					q = append(q, cc)
-					ccMap[cc] = struct{}{}
-				}
-			}
-		}
-	}
-	delete(ccMap, coord)
-	ccl := Coordinates{}
-	for k := range ccMap {
-		ccl = append(ccl, k)
-	}
-	return ccl
 }
 
 func buildMap(contents *[]string, elfAttackPower int) ([][]rune, Units) {
@@ -407,12 +360,14 @@ func (u Units) Less(i, j int) bool {
 }
 
 type Graph struct {
-	adj map[Coordinate][]Coordinate
+	adj                        map[Coordinate][]Coordinate
+	shortestReachablePositions Coordinates
 }
 
-func NewGraph(m [][]rune, source Coordinate) Graph {
+func NewGraph(m [][]rune, source Coordinate, reachablePositions Coordinates) Graph {
 	graph := Graph{
 		adj: map[Coordinate][]Coordinate{},
+		shortestReachablePositions: Coordinates{},
 	}
 	for i := range graph.adj {
 		graph.adj[i] = []Coordinate{}
@@ -420,11 +375,26 @@ func NewGraph(m [][]rune, source Coordinate) Graph {
 	seen := map[Coordinate]struct{}{
 		source: struct{}{},
 	}
+
+	// Find the shortestReachablePositions, and break early (don't walk the entire table)
+	// There may be multiple at the same depth
+	depth := map[Coordinate]int{}
+	depth[source] = 0
+	foundDepth := 0
+	reachPosMap := map[Coordinate]struct{}{}
+	for _, v := range reachablePositions {
+		reachPosMap[v] = struct{}{}
+	}
+
 	q := []Coordinate{source}
 	for len(q) > 0 {
 		c := q[0]
 		q = q[1:]
 
+		// Ensure multiple potential equidistance shortest positions are found
+		if foundDepth > 0 && depth[c] > foundDepth {
+			break
+		}
 		for _, v := range neighbors {
 			if m[c.y+v.y][c.x+v.x] == '.' {
 				cc := Coordinate{x: c.x + v.x, y: c.y + v.y}
@@ -433,22 +403,29 @@ func NewGraph(m [][]rune, source Coordinate) Graph {
 					seen[cc] = struct{}{}
 					graph.adj[c] = append(graph.adj[c], cc)
 					graph.adj[cc] = append(graph.adj[cc], c)
+					depth[cc] = depth[c] + 1
+					if _, ok := reachPosMap[cc]; ok {
+						graph.shortestReachablePositions = append(graph.shortestReachablePositions, cc)
+						foundDepth = depth[cc]
+					}
 				}
 			}
 		}
 	}
+
 	return graph
 }
 
-func (g Graph) nextMove(src Coordinate, reachablePositions Coordinates) Coordinate {
+func (g Graph) nextMove(src Coordinate) Coordinate {
 	// Find shortest paths
-	if len(reachablePositions) == 0 {
+	if len(g.shortestReachablePositions) == 0 {
 		return src
 	}
+
 	paths := map[Coordinate]Coordinates{}
 	count := 0
 	// Find the path for each reachable destination
-	for _, pos := range reachablePositions {
+	for _, pos := range g.shortestReachablePositions {
 		q := Coordinates{
 			src,
 		}
@@ -476,13 +453,13 @@ func (g Graph) nextMove(src Coordinate, reachablePositions Coordinates) Coordina
 	}
 	// First, find all paths that are shortest
 	minDistance := count
-	for _, pos := range reachablePositions {
+	for _, pos := range g.shortestReachablePositions {
 		if len(paths[pos]) < minDistance {
 			minDistance = len(paths[pos])
 		}
 	}
 	targetPositions := Coordinates{}
-	for _, pos := range reachablePositions {
+	for _, pos := range g.shortestReachablePositions {
 		if len(paths[pos]) == minDistance {
 			targetPositions = append(targetPositions, pos)
 		}
