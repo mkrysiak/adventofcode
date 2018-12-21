@@ -27,7 +27,9 @@ var opCodes = map[string]interface{}{
 
 func main() {
 	fmt.Printf("Part 1: %d\n", part1())
-	fmt.Printf("Part 2: %d\n", part2())
+	fmt.Printf("Part 1a: %d\n", part1Alt())
+	fmt.Printf("Part 2: %d\n", part2()) // Brute force
+	fmt.Printf("Part 2a: %d\n", part2Alt())
 }
 
 func part1() int {
@@ -83,8 +85,60 @@ func part2() int {
 	return 0
 }
 
-func execute() {
+func part1Alt() int {
+	r3, r4, r5 := 0, 0, 0
+	for {
+		r3 = r4 | 65536
+		r4 = 10552971
+		for {
+			r5 = r3 & 255 // Lower 8
+			r4 = r5 + r4
+			r4 = r4 & 16777215 // Lower 24
+			r4 = r4 * 65899
+			r4 = r4 & 16777215
+			if r3 < 256 {
+				return r4
+			}
+			r3 = (r3 / 256)
+			// else {
+			// r5 = 0
+			// for {
+			// 	r5++
+			// 	r2 = r5 * 256
+			// 	if r2 > r3 {
+			// 		r3 = r5
+			// 		break
+			// 	}
+			// }
+		}
+	}
+}
 
+func part2Alt() int {
+	r3, r4, r5 := 0, 0, 0
+	seen := map[int]struct{}{}
+	prev := 0
+	for {
+		r3 = r4 | 65536
+		r4 = 10552971
+		for {
+			r5 = r3 & 255 // Lower 8
+			r4 = r5 + r4
+			r4 = r4 & 16777215 // Lower 24
+			r4 = r4 * 65899
+			r4 = r4 & 16777215
+			if r3 < 256 {
+				if _, ok := seen[r4]; !ok {
+					seen[r4] = struct{}{}
+					prev = r4
+					break
+				} else {
+					return prev
+				}
+			}
+			r3 = (r3 / 256)
+		}
+	}
 }
 
 func addr(i [4]int, r *[6]int) {
