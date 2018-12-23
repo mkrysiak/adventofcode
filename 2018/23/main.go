@@ -71,6 +71,7 @@ func part2(nb nanobots) int {
 	for stepSize < max {
 		stepSize *= 2
 	}
+	minx, miny, minz = 0, 0, 0
 
 	// https://www.reddit.com/r/adventofcode/comments/a8s17l/2018_day_23_solutions/ecddus1
 	for stepSize > 0 {
