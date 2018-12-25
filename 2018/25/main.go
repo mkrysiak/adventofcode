@@ -40,20 +40,22 @@ func part1(in string) int {
 			w: w,
 		}
 
-		matchesMap := map[int]struct{}{}
+		// matchesMap := map[int]struct{}{}
+		matches := []int{}
 		for i := range constellations {
 			for j := range constellations[i] {
 				if coord.manhattanDistance(constellations[i][j]) <= 3 {
-					matchesMap[i] = struct{}{}
+					// matchesMap[i] = struct{}{}
+					matches = append(matches, i)
 					break
 				}
 			}
 		}
 
-		matches := []int{}
-		for k := range matchesMap {
-			matches = append(matches, k)
-		}
+		// matches := []int{}
+		// for k := range matchesMap {
+		// 	matches = append(matches, k)
+		// }
 
 		if len(matches) > 0 {
 			constellations[matches[0]] = append(constellations[matches[0]], coord)
