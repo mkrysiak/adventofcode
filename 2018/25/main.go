@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"math"
-	"sort"
 	"strconv"
 	"strings"
 )
@@ -55,7 +54,6 @@ func part1(in string) int {
 		for k := range matchesMap {
 			matches = append(matches, k)
 		}
-		sort.Ints(matches)
 
 		if len(matches) > 0 {
 			constellations[matches[0]] = append(constellations[matches[0]], coord)
